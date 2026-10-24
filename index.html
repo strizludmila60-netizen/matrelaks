@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Математичний релакс: Черепашка-художник</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #F0F8FF;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #toolbar {
+            height: 60px;
+            background-color: #F0F8FF;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 8px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-sketch { background-color: #E6E6FA; }
+        .btn-color { background-color: #98FB98; }
+        .btn-sky { background-color: #87CEEB; }
+        .btn-clear { background-color: #CD5C5C; color: white; margin-left: auto; }
+        button:hover { opacity: 0.8; }
+        
+        #canvas-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            position: relative;
+        }
+        canvas {
+            background-color: white;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toolbar">
+        <button class="btn-sketch" onclick="runSketch()">1. Намалювати ескіз</button>
+        <button class="btn-color" onclick="runColor()">2. Розфарбувати</button>
+        <button class="btn-sky" onclick="makeSkyBlue()">Змінити небо</button>
+        <button class="btn-clear" onclick="clearCanvas()">Очистити все</button>
+    </div>
+
+    <div id="canvas-container">
+        <canvas id="myCanvas" width="900" height="500"></canvas>
+    </div>
+
+<script>
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function clearCanvas(color = "white") {
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    clearCanvas();
+
+    // Допоміжні функції для малювання
+    function drawSun(x, y, isSketch) {
+        ctx.beginPath();
+        ctx.arc(x, y, 25, 0, Math.PI * 2);
+        if (isSketch) {
+            ctx.strokeStyle = "gray";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        } else {
+            ctx.fillStyle = "#FFF8DC";
+            ctx.fill();
+            ctx.strokeStyle = "#FFD700";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        // Промені
+        for (let i = 0; i < 8; i++) {
+            let angle = (i * 45) * Math.PI / 180;
+            let x1 = x + Math.cos(angle) * 25;
+            let y1 = y + Math.sin(angle) * 25;
+            let x2 = x + Math.cos(angle) * 40;
+            let y2 = y + Math.sin(angle) * 40;
+
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = isSketch ? "gray" : "#FFA500";
+            ctx.lineWidth = isSketch ? 1 : 3;
+            ctx.stroke();
+        }
+    }
+
+    function drawBoat(x, y, isSketch) {
+        // Корпус човна
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - 40, y + 50);
+        ctx.lineTo(x + 120, y + 50);
+        ctx.lineTo(x + 80, y);
+        ctx.closePath();
+
+        if (isSketch) {
+            ctx.strokeStyle = "gray";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        } else {
+            ctx.fillStyle = "#D2B48C";
+            ctx.fill();
+            ctx.strokeStyle = "#8B4513";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        // Вітрило
+        ctx.beginPath();
+        ctx.moveTo(x + 40, y);
+        ctx.lineTo(x + 40, y - 70);
+        ctx.lineTo(x + 90, y - 25);
+        ctx.closePath();
+
+        if (isSketch) {
+            ctx.strokeStyle = "gray";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        } else {
+            ctx.fillStyle = "#FFA07A";
+            ctx.fill();
+            ctx.strokeStyle = "#FF4500";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+    }
+
+    function drawWhale(x, y, isSketch) {
+        ctx.beginPath();
+        ctx.arc(x, y, 50, Math.PI, 0, false);
+        ctx.lineTo(x + 50, y + 30);
+        ctx.lineTo(x, y + 30);
+        ctx.closePath();
+
+        if (isSketch) {
+            ctx.strokeStyle = "gray";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        } else {
+            ctx.fillStyle = "#3CB371";
+            ctx.fill();
+            ctx.strokeStyle = "#2E8B57";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+    }
+
+    function drawWave(x, y, isSketch) {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        for (let i = 0; i < 6; i++) {
+            ctx.bezierCurveTo(x + 10 + i*40, y - 20, x + 30 + i*40, y - 20, x + 40 + i*40, y);
+        }
+        ctx.strokeStyle = isSketch ? "gray" : "#1E90FF";
+        ctx.lineWidth = isSketch ? 1 : 2;
+        ctx.stroke();
+    }
+
+    // Дії кнопок
+    function runSketch() {
+        clearCanvas(document.getElementById("canvas-container").style.backgroundColor || "white");
+        drawSun(150, 100, true);
+        drawWave(100, 350, true);
+        drawBoat(350, 280, true);
+        drawWhale(650, 300, true);
+    }
+
+    function runColor() {
+        drawSun(150, 100, false);
+        drawWave(100, 350, false);
+        drawBoat(350, 280, false);
+        drawWhale(650, 300, false);
+    }
+
+    function makeSkyBlue() {
+        document.getElementById("myCanvas").style.backgroundColor = "#E0FFFF";
+    }
+</script>
+</body>
+</html>
