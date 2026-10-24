@@ -67,7 +67,7 @@
     const canvas = document.getElementById("myCanvas");
     const ctx = canvas.getContext("2d");
 
-    let currentBgColor = "white"; // Початковий фон полотна
+    let currentBgColor = "white";
 
     function clearCanvas() {
         ctx.fillStyle = currentBgColor;
@@ -108,13 +108,14 @@
         }
     }
 
-    // 2. Човен і вітрило
+    // 2. Човен із правильною трапецією
     function drawBoat(x, y, isSketch) {
+        // Корпус човна (широка основа вгорі)
         ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x - 40, y + 50);
-        ctx.lineTo(x + 120, y + 50);
-        ctx.lineTo(x + 80, y);
+        ctx.moveTo(x - 40, y);
+        ctx.lineTo(x + 120, y);
+        ctx.lineTo(x + 90, y + 45);
+        ctx.lineTo(x - 10, y + 45);
         ctx.closePath();
 
         if (isSketch) {
@@ -129,11 +130,19 @@
             ctx.stroke();
         }
 
-        // Вітрило
+        // Щогла
         ctx.beginPath();
         ctx.moveTo(x + 40, y);
-        ctx.lineTo(x + 40, y - 70);
-        ctx.lineTo(x + 90, y - 25);
+        ctx.lineTo(x + 40, y - 80);
+        ctx.strokeStyle = isSketch ? "gray" : "#8B4513";
+        ctx.lineWidth = isSketch ? 1 : 3;
+        ctx.stroke();
+
+        // Вітрило
+        ctx.beginPath();
+        ctx.moveTo(x + 40, y - 80);
+        ctx.lineTo(x + 95, y - 35);
+        ctx.lineTo(x + 40, y - 10);
         ctx.closePath();
 
         if (isSketch) {
@@ -149,12 +158,13 @@
         }
     }
 
-    // 3. Кит
+    // 3. Виразний кит з хвостом, оком і фонтанчиком
     function drawWhale(x, y, isSketch) {
+        // Тіло кита
         ctx.beginPath();
-        ctx.arc(x, y, 50, Math.PI, 0, false);
-        ctx.lineTo(x + 50, y + 30);
-        ctx.lineTo(x, y + 30);
+        ctx.arc(x, y, 55, Math.PI, 0, false);
+        ctx.lineTo(x + 55, y + 10);
+        ctx.lineTo(x - 55, y + 10);
         ctx.closePath();
 
         if (isSketch) {
@@ -168,13 +178,67 @@
             ctx.lineWidth = 3;
             ctx.stroke();
         }
+
+        // Хвіст кита
+        ctx.beginPath();
+        ctx.moveTo(x + 50, y + 5);
+        ctx.lineTo(x + 85, y - 15);
+        ctx.lineTo(x + 75, y + 10);
+        ctx.lineTo(x + 85, y + 35);
+        ctx.closePath();
+
+        if (isSketch) {
+            ctx.strokeStyle = "gray";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        } else {
+            ctx.fillStyle = "#3CB371";
+            ctx.fill();
+            ctx.strokeStyle = "#2E8B57";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        if (!isSketch) {
+            // Око
+            ctx.beginPath();
+            ctx.arc(x - 30, y - 20, 7, 0, Math.PI * 2);
+            ctx.fillStyle = "white";
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(x - 32, y - 20, 3, 0, Math.PI * 2);
+            ctx.fillStyle = "black";
+            ctx.fill();
+
+            // Фонтанчик води
+            ctx.beginPath();
+            ctx.moveTo(x - 10, y - 55);
+            ctx.quadraticCurveTo(x - 25, y - 85, x - 35, y - 75);
+            ctx.moveTo(x - 10, y - 55);
+            ctx.quadraticCurveTo(x, y - 90, x + 5, y - 80);
+            ctx.strokeStyle = "#00BFFF";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        } else {
+            // Фонтанчик для ескізу
+            ctx.beginPath();
+            ctx.moveTo(x - 10, y - 55);
+            ctx.lineTo(x - 20, y - 75);
+            ctx.moveTo(x - 10, y - 55);
+            ctx.lineTo(x - 5, y - 80);
+            ctx.strokeStyle = "gray";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
     }
 
     // 4. Хвилі
     function drawWave(x, y, isSketch) {
         ctx.beginPath();
         ctx.moveTo(x, y);
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 7; i++) {
             ctx.bezierCurveTo(x + 10 + i*40, y - 20, x + 30 + i*40, y - 20, x + 40 + i*40, y);
         }
         ctx.strokeStyle = isSketch ? "gray" : "#1E90FF";
@@ -182,30 +246,26 @@
         ctx.stroke();
     }
 
-    // Управління кнопками
+    // Дії кнопок
     function runSketch() {
         clearCanvas();
         drawSun(150, 100, true);
-        drawWave(100, 350, true);
-        drawBoat(350, 280, true);
-        drawWhale(650, 300, true);
+        drawWave(80, 360, true);
+        drawBoat(300, 320, true);
+        drawWhale(620, 320, true);
     }
 
     function runColor() {
         drawSun(150, 100, false);
-        drawWave(100, 350, false);
-        drawBoat(350, 280, false);
-        drawWhale(650, 300, false);
+        drawWave(80, 360, false);
+        drawBoat(300, 320, false);
+        drawWhale(620, 320, false);
     }
 
     function makeSkyBlue() {
-        currentBgColor = "#E0FFFF"; // Змінюємо колір фону на вечірній
+        currentBgColor = "#E0FFFF";
         clearCanvas();
-        // Перемальовуємо кольорові елементи при зміні фону
-        drawSun(150, 100, false);
-        drawWave(100, 350, false);
-        drawBoat(350, 280, false);
-        drawWhale(650, 300, false);
+        runColor();
     }
 </script>
 </body>
