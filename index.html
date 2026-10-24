@@ -41,12 +41,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: white;
-            position: relative;
+            background-color: #F0F8FF;
         }
         canvas {
             background-color: white;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -55,7 +55,7 @@
     <div id="toolbar">
         <button class="btn-sketch" onclick="runSketch()">1. Намалювати ескіз</button>
         <button class="btn-color" onclick="runColor()">2. Розфарбувати</button>
-        <button class="btn-sky" onclick="makeSkyBlue()">Змінити небо</button>
+        <button class="btn-sky" onclick="makeSkyBlue()">Змінити небо на вечірнє</button>
         <button class="btn-clear" onclick="clearCanvas()">Очистити все</button>
     </div>
 
@@ -67,14 +67,16 @@
     const canvas = document.getElementById("myCanvas");
     const ctx = canvas.getContext("2d");
 
-    function clearCanvas(color = "white") {
-        ctx.fillStyle = color;
+    let currentBgColor = "white"; // Початковий фон полотна
+
+    function clearCanvas() {
+        ctx.fillStyle = currentBgColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
     clearCanvas();
 
-    // Допоміжні функції для малювання
+    // 1. Сонце з променями
     function drawSun(x, y, isSketch) {
         ctx.beginPath();
         ctx.arc(x, y, 25, 0, Math.PI * 2);
@@ -90,7 +92,6 @@
             ctx.stroke();
         }
 
-        // Промені
         for (let i = 0; i < 8; i++) {
             let angle = (i * 45) * Math.PI / 180;
             let x1 = x + Math.cos(angle) * 25;
@@ -107,8 +108,8 @@
         }
     }
 
+    // 2. Човен і вітрило
     function drawBoat(x, y, isSketch) {
-        // Корпус човна
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x - 40, y + 50);
@@ -148,6 +149,7 @@
         }
     }
 
+    // 3. Кит
     function drawWhale(x, y, isSketch) {
         ctx.beginPath();
         ctx.arc(x, y, 50, Math.PI, 0, false);
@@ -168,6 +170,7 @@
         }
     }
 
+    // 4. Хвилі
     function drawWave(x, y, isSketch) {
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -179,9 +182,9 @@
         ctx.stroke();
     }
 
-    // Дії кнопок
+    // Управління кнопками
     function runSketch() {
-        clearCanvas(document.getElementById("canvas-container").style.backgroundColor || "white");
+        clearCanvas();
         drawSun(150, 100, true);
         drawWave(100, 350, true);
         drawBoat(350, 280, true);
@@ -196,7 +199,13 @@
     }
 
     function makeSkyBlue() {
-        document.getElementById("myCanvas").style.backgroundColor = "#E0FFFF";
+        currentBgColor = "#E0FFFF"; // Змінюємо колір фону на вечірній
+        clearCanvas();
+        // Перемальовуємо кольорові елементи при зміні фону
+        drawSun(150, 100, false);
+        drawWave(100, 350, false);
+        drawBoat(350, 280, false);
+        drawWhale(650, 300, false);
     }
 </script>
 </body>
